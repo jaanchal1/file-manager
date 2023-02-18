@@ -1,0 +1,88 @@
+@layout("layouts/logged-in")
+@set("title", file.name)
+@set("url", await file.attachment.getSignedUrl({
+    contentDisposition: `attachment; filename="${file.name.replace(/"/g, "")}"`,
+}))
+
+@section("body")
+
+<div class="container">
+    <div class="card my-6 bg-transparent">
+        <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+            <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3 text-center">
+                <h6 class="text-white text-capitalize ps-3">
+                    {{ file.name }}
+                </h6>
+            </div>
+        </div>
+        <div class="card-body px-4 pb-2">
+
+            <div class="card bg-transparent border mb-3 mx-6">
+                <div class="card-header py-0 my-0">
+                    <h4 class="text-info">Preview</h4>
+                </div>
+                <div class="card-body text-center">
+                    @if(file.attachment.mimeType?.match(/^image\/.+/i))
+                    <img src="{{ url }}" class="img-fluid" style="max-height:50vh" />
+                    @elseif(file.attachment.mimeType?.match(/^video\/.+/i))
+                    <video src="{{ url }}" controls style="max-height:50vh"></video>
+                    @elseif(file.attachment.mimeType?.match(/^audio\/.+/i))
+                    <audio src="{{ url }}" controls style="max-height:50vh"></audio>
+                    @elseif(file.attachment.mimeType === "application/pdf")
+                    <embed src="{{ url }}" class="w-100" style="max-height:50vh; min-height:30vh">
+                    @elseif(file.attachment.mimeType?.match(/^text\/.+/i) || file.attachment.mimeType ===
+                    "application/json")
+                    <textarea class="w-100 text-start" id="preview-area" rows="20">
+                    Loading....
+                    </textarea>
+                    <script>
+                        (() => {
+                            fetch("{{ url }}").then(resp => resp.text()).then(txt => {
+                                document.querySelector("#preview-area").value = txt
+                            })
+                        })()
+                    </script>
+                    @else
+                    <h1 class="text-danger">Preview not available</h1>
+                    @end
+                </div>
+            </div>
+
+            @if(file.isPublic)
+            <div class="d-flex flex-row input-group input-group-static mb-1 align-items-start justify-content-start">
+                    <label class="h6 pt-1 mt-1 me-2">Public Url</label>
+                        <input class="form-control w-auto" readonly value="{{ route('files.show', {id: file.id}, {prefixUrl: PUBLIC_DOMAIN}) }}" />
+            </div>
+            @end
+            <h5>Uploaded By: {{ file.user.username }}</h5>
+            <h5>Uploaded On: <span id="createdAt-{{ file.id }}">
+                    {{ file.createdAt }}
+                </span>
+                <script>
+                    (() => {
+                                const date = new Date({{ file.createdAt.toMillis() }})
+                                document.querySelector("#createdAt-{{ file.id }}").innerText = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`
+                            })()
+                </script>
+            </h5>
+
+            <a class="btn btn-success w-100 btn-lg" download="{{ file.name }}" href="{{ url }}">Download</a>
+
+        </div>
+    </div>
+
+    @if(auth.isLoggedIn)
+    @include('partials/upload-file')
+    <div class="text-center">
+        Want to share files?
+        <a class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modal-form">Upload now</a>
+    </div>
+    @else
+    <div class="text-center">
+        Want to share files?
+        <a class="btn btn-primary" href="{{ route('signup-form') }}">Register now</a>
+    </div>
+    @end
+</div>
+
+@end
