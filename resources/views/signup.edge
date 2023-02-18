@@ -1,0 +1,53 @@
+@layout('layouts/auth')
+@set("title", "Sign Up")
+
+
+@section("card-title")
+    <h4 class="text-white font-weight-bolder text-center mt-2 mb-0">Create Account</h4>
+@end
+
+@section("card-form")
+    <form role="form" class="text-start" method="post" >
+
+        <div class="input-group input-group-outline mt-3">
+            <label class="form-label">Username</label>
+            <input type="string" class="form-control" name="username" >
+        </div>
+
+        @if(flashMessages.has('errors.username'))
+            <span class="text-danger" >
+                {{ flashMessages.get('errors.username') }}
+            </span>
+        @end
+
+        <div class="input-group input-group-outline mt-3">
+            <label class="form-label">Password</label>
+            <input type="password" class="form-control" name="password" >
+        </div>
+
+        @if(flashMessages.has('errors.password'))
+            <span class="text-danger" >
+                {{ flashMessages.get('errors.password') }}
+            </span>
+        @end
+
+        <div class="input-group input-group-outline mt-3">
+            <label class="form-label">Confirm Password</label>
+            <input type="password" class="form-control" name="confirm_password" >
+        </div>
+
+        @if(flashMessages.has('errors.confirm_password'))
+            <span class="text-danger" >
+                {{ flashMessages.get('errors.confirm_password') }}
+            </span>
+        @end
+
+        <div class="text-center mt-2">
+        <button type="submit" class="btn bg-gradient-primary w-100 my-4 mb-2">Sign up</button>
+        </div>
+        <p class="mt-4 text-sm text-center">
+            Already have an account?
+            <a href="{{ route("login-form") }}" class="text-primary text-gradient font-weight-bold">Sign in</a>
+        </p>
+    </form>
+@end
