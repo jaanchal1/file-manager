@@ -1,0 +1,84 @@
+@layout("layouts/logged-in")
+@set("title", "Home")
+
+@section("body")
+
+<div class="container">
+    <div class="card my-6 bg-transparent">
+        <div class="card-header p-0 position-relative mt-n4 mx-3 z-index-2">
+            <button type="button" class="btn bg-gradient-success float-end me-4 mt-3" data-bs-toggle="modal" data-bs-target="#modal-form">
+                Upload File
+            </button>
+            <div class="bg-gradient-primary shadow-primary border-radius-lg pt-4 pb-3 text-center">
+                <h6 class="text-white text-capitalize ps-3">
+                    File List
+                </h6>
+            </div>
+        </div>
+
+        <div class="card-body px-0 pb-2">
+            @if(files.length < 1) 
+                <div class="row p-2">
+                    <div class="col-12 text-center">
+                        <h3>You have not uploaded any files yet!</h3>
+                        <button type="button" class="btn bg-gradient-success" data-bs-toggle="modal" data-bs-target="#modal-form">
+                            <i class="material-icons">add_circle</i> Upload now
+                        </button>
+                    </div>
+                </div>
+            @else
+                <div class="row mx-2 px-2 border-bottom">
+                    <div class="col-1">
+                        <h6>#</h6>
+                    </div>
+                    <div class="col-5">
+                        <h6>Name</h6>
+                    </div>
+                    <div class="col-3">
+                        <h6>Created At</h6>
+                    </div>
+                    <div class="col-2">
+                        <h6>Public</h6>
+                    </div>
+                    <div class="col-1">
+                        <h6></h6>
+                    </div>
+                </div>
+
+                @each((file, index) in files)
+                <div class="row mx-2 p-2 border-bottom" id="file-{{ file.id }}">
+                    <div class="col-1">
+                        {{ files.length - index }}
+                    </div>
+                    <div class="col-5">
+                        <a href="{{ route('files.show', { id: file.id  }) }}" class="nav-link link-primary d-inline-block" >{{ file.name }}</a>
+                    </div>
+                    <div class="col-3">
+                        <div id="createdAt-{{ file.id }}">
+                            {{ file.createdAt }}
+                        </div>
+                        <script>
+                            (() => {
+                                const date = new Date({{ file.createdAt.toMillis() }})
+                                document.querySelector("#createdAt-{{ file.id }}").innerText = `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}`
+                            })()
+                        </script>
+                    </div>
+                    <div class="col-2">
+                        <i class="material-icons {{ file.isPublic ? 'text-success' : 'text-danger' }}" >
+                                {{{ file.isPublic ? "done": "close" }}}
+                            </i>
+                    </div>
+                    <div class="col-1">
+                        <form method="post" action="{{ route('files.destroy', { id: file.id }) }}" id="delete-form-{{file.id}}" >
+                            <i class="material-icons text-warning cursor-pointer" onclick="document.querySelector('#delete-form-{{file.id}}').submit()">delete</i>
+                        </form>
+                    </div>
+                </div>
+                @end
+        @end
+    </div>
+</div>
+</div>
+@include("partials/upload-file")
+@end
