@@ -7,6 +7,17 @@
 
 import Env from '@ioc:Adonis/Core/Env'
 import { DatabaseConfig } from '@ioc:Adonis/Lucid/Database'
+import { ConnectionOptions } from 'tls'
+
+let pgSSL: ConnectionOptions | boolean = false
+
+if (Env.get('PG_SSL_ENABLED')) {
+  pgSSL = {}
+
+  if (Env.get('PG_SSL_CA')) {
+    pgSSL.ca = Env.get('PG_SSL_CA')
+  }
+}
 
 const databaseConfig: DatabaseConfig = {
   /*
@@ -41,6 +52,7 @@ const databaseConfig: DatabaseConfig = {
         user: Env.get('PG_USER'),
         password: Env.get('PG_PASSWORD', ''),
         database: Env.get('PG_DB_NAME'),
+        ssl: pgSSL,
       },
       migrations: {
         naturalSort: true,
@@ -48,8 +60,7 @@ const databaseConfig: DatabaseConfig = {
       healthCheck: false,
       debug: false,
     },
-
-  }
+  },
 }
 
 export default databaseConfig

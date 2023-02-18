@@ -29,6 +29,8 @@ export default Env.rules({
   PG_USER: Env.schema.string(),
   PG_PASSWORD: Env.schema.string.optional(),
   PG_DB_NAME: Env.schema.string(),
+  PG_SSL_ENABLED: Env.schema.boolean.optional(),
+  PG_SSL_CA: Env.schema.string.optional(),
 
   PUBLIC_DOMAIN: Env.schema.string({
     format: 'url',
