@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>{{ title }} | File Manager</title>
+
+    <link rel="icon" type="image/png" href="{{ asset('assets/img/favicon.png') }}">
+
+    <link rel="stylesheet" type="text/css"
+        href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700,900|Roboto+Slab:400,700" />
+    <link href="{{ asset('assets/css/nucleo-icons.css') }}" rel="stylesheet" />
+    <link href="{{ asset('assets/css/nucleo-svg.css') }}" rel="stylesheet" />
+    <!-- Font Awesome Icons -->
+    <script src="https://kit.fontawesome.com/42d5adcbca.js" crossorigin="anonymous"></script>
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <!-- CSS Files -->
+    <link id="pagestyle" href="{{ asset('assets/css/material-dashboard.min.css') }}" rel="stylesheet" />
+    <style>
+        .dark-version .form-switch .form-check-input:checked {
+            background-image: linear-gradient(195deg, #ec407a, #d81b60) !important;
+        }
+    </style>
+    @!section("head")
+</head>
+
+<body class="bg-gray-200 dark-version">
+    <main class="main-content position-relative max-height-vh-100 h-100 border-radius-lg ">
+
+        <nav class="navbar navbar-main navbar-expand-lg px-0 mx-4 shadow-none border-radius-xl" id="navbarBlur"
+            data-scroll="true">
+            <div class="container-fluid py-1 px-3">
+                <nav aria-label="breadcrumb">
+                    <a href="{{ route('files.index') }}">
+                        <h1 class="font-weight-bolder mb-0">
+                            <img src="{{ asset('assets/img/favicon.png') }}" width="50px" class="mx-1" />
+                            File Manager
+                        </h1>
+                    </a>
+                </nav>
+                <div class="mt-sm-0 mt-2 me-md-0 me-sm-4" id="navbar">
+                    <ul class="navbar-nav justify-content-end">
+                        <li class="nav-item align-items-center">
+                            <a 
+                                @if(!auth.isLoggedIn)
+                                href="{{ route('login-form') }}"
+                                @end
+                                class="nav-link text-body font-weight-bold px-0">
+                                <h5>
+                                    <i class="fa fa-user me-sm-1"></i>
+                                    {{
+                                    auth.isLoggedIn ? auth.user.username : "Sign In"
+                                    }}
+                                </h5>
+                            </a>
+                        </li>
+                        @if(auth.isLoggedIn)
+                        <li class="nav-item align-items-center">
+                            <a href="{{ route('logout') }}" class="ms-3 nav-link text-body font-weight-bold px-0">
+                                <h5>
+                                    <i class="material-icons">logout</i>
+                                    Logout
+                                </h5>
+                            </a>
+                        </li>
+                        @end
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        @!section("body")
+
+    </main>
+
+    @!section("footer")
+
+    <div class="toast-container position-fixed top-0 end-0 mt-5" id="toast-container" ></div>
+    
+    <script src="{{ asset('assets/js/core/popper.min.js') }}"></script>
+    <script src="{{ asset('assets/js/core/bootstrap.min.js') }}"></script>
+    <script src="{{ asset('assets/js/plugins/perfect-scrollbar.min.js') }}"></script>
+    <script src="{{ asset('assets/js/plugins/smooth-scrollbar.min.js') }}"></script>
+    <script>
+        function createToast({header, headerClasses, body, bodyClasses, options}) {
+            const div = document.createElement("div")
+
+            div.className = "toast"
+            div.setAttribute("role", "alert")
+
+            if(header) {
+                const headerDiv = document.createElement("div")
+                headerDiv.className = `toast-header ${headerClasses || ""}`
+                
+                if(typeof header ==='object') {
+                    headerDiv.appendChild(header)
+                } else { headerDiv.innerHTML = header }
+
+                div.appendChild(headerDiv)
+
+                if(!headerDiv.querySelector("[data-bs-dismiss='toast']")) {
+                    headerDiv.innerHTML += `<button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast" aria-label="Close"><i class='material-icons'>close</i></button>`
+                }
+            }
+
+            if(body) {
+                const bodyDiv = document.createElement("div")
+                bodyDiv.className = `toast-body ${bodyClasses || ""}`
+
+                if(typeof body === 'object') {
+                    bodyDiv.appendChild(body)
+                }
+                else {
+                    bodyDiv.innerHTML = body
+                }
+
+                div.appendChild(bodyDiv)
+            }
+
+            document.querySelector("#toast-container").appendChild(div)
+
+            new bootstrap.Toast(div, options || {}).show()
+
+            return div
+        }
+
+        (() => {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'))
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl)
+            })
+
+            @if(flashMessages.has('createdFile'))
+                createToast({
+                    header: `Upload Successfull`,
+                    headerClasses: "bg-success text-white",
+                    body: `Successfully uploaded file {{ flashMessages.all()?.createdFile.name }}`,
+                })
+            @end
+
+            @if(flashMessages.has("deletedFile"))
+                createToast({
+                    header: "Deleted Successfully",
+                    headerClasses: "bg-success text-white",
+                    body: "Deleted file {{ flashMessages.all().deletedFile.name }} successfully!"
+                })
+            @end
+
+            @if(flashMessages.has("errors.file"))
+                createToast({
+                    header: "Upload failed",
+                    headerClasses: "bg-danger text-white",
+                    body: `{{ flashMessages.get("errors.file") }}`
+                })
+            @end
+        })()
+    </script>
+</body>
+
+</html>
