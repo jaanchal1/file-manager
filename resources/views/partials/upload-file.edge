@@ -1,0 +1,50 @@
+<div class="modal fade" id="modal-form" tabindex="-1" role="dialog" aria-labelledby="modal-form" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+        <div class="modal-content bg-transparent">
+            <div class="modal-body p-0">
+                <div class="card card-plain">
+                    <div class="card-header pb-0 text-left">
+                        <h5 class="">Upload File</h5>
+                        <p class="mb-0">Simply select a file & click upload!</p>
+                    </div>
+                    <div class="card-body">
+                        <form id="upload-file-form" role="form text-left" method="post" enctype="multipart/form-data" action="{{ route('files.store') }}">
+                            <div class="input-group input-group-static my-3">
+                                <label for="file-attachment">File to upload:</label><br>
+                                <input type="file" name="file" id="file-attachment" class="form-control" required />
+                            </div>
+
+                            <div class="input-group input-group-static my-3">
+                                <label>File Name:</label>
+                                <input type="text" class="form-control" name="name" id="file-name" required maxlength="200" />
+                            </div>
+
+                            <div class="form-check form-switch d-flex align-items-center">
+                                <input class="form-check-input" type="checkbox" id="file-is_public" name="is_public"
+                                    checked="" value="true">
+                                <label class="form-check-label mb-0 ms-3" for="is_public">Public</label>
+                                <i class="material-icons text-info mx-1" data-bs-toggle="tooltip" data-bs-placement="top"
+                                    title="Selecting this option will allow anyone with link to access your file">info</i>
+                            </div>
+                            <div class="text-center">
+                                <button type="submit"
+                                    class="btn btn-round bg-gradient-info btn-lg w-100 mt-4 mb-0">Upload</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+(() => {
+    document.querySelector("#file-attachment").addEventListener("change", function (e) {
+        const files = this.files
+
+        if(files.length) {
+            document.querySelector("#file-name").value = files[0].name
+        }
+    })
+})()
+</script>
