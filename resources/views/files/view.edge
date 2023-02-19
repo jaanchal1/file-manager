@@ -29,7 +29,7 @@ contentDisposition: `attachment; filename="${file.name.replace(/"/g, "")}"`,
                     @elseif(file.attachment.mimeType?.match(/^audio\/.+/i))
                     <audio src="{{ url }}" controls style="max-height:50vh"></audio>
                     @elseif(file.attachment.mimeType === "application/pdf")
-                    <embed src="{{ url }}" class="w-100" style="max-height:50vh; min-height:30vh">
+                    <embed src="{{ await file.attachment.getSignedUrl() }}" class="w-100" style="max-height:50vh; min-height:30vh">
                     @elseif(file.attachment.mimeType?.match(/^text\/.+/i) || file.attachment.mimeType ===
                     "application/json")
                     <textarea class="w-100 text-start" id="preview-area" rows="20">
