@@ -1,7 +1,7 @@
 @layout("layouts/logged-in")
 @set("title", file.name)
 @set("url", await file.attachment.getSignedUrl({
-    contentDisposition: `attachment; filename="${file.name.replace(/"/g, "")}"`,
+contentDisposition: `attachment; filename="${file.name.replace(/"/g, "")}"`,
 }))
 
 @section("body")
@@ -37,7 +37,7 @@
                     </textarea>
                     <script>
                         (() => {
-                            fetch("{{ url }}").then(resp => resp.text()).then(txt => {
+                            fetch( decodeURIComponent("{{{ encodeURIComponent(url) }}}") ).then(resp => resp.text()).then(txt => {
                                 document.querySelector("#preview-area").value = txt
                             })
                         })()
@@ -50,8 +50,9 @@
 
             @if(file.isPublic)
             <div class="d-flex flex-row input-group input-group-static mb-1 align-items-start justify-content-start">
-                    <label class="h6 pt-1 mt-1 me-2">Public Url</label>
-                        <input class="form-control w-auto" readonly value="{{ route('files.show', {id: file.id}, {prefixUrl: PUBLIC_DOMAIN}) }}" />
+                <label class="h6 pt-1 mt-1 me-2">Public Url</label>
+                <input class="form-control w-auto" readonly
+                    value="{{ route('files.show', {id: file.id}, {prefixUrl: PUBLIC_DOMAIN}) }}" />
             </div>
             @end
             <h5>Uploaded By: {{ file.user.username }}</h5>
